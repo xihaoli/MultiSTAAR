@@ -1,0 +1,10 @@
+exportPattern("^[[:alpha:]]+")
+import(Rcpp, GMMAT, STAAR, Matrix, methods)
+importFrom("stats", "binomial", "dbeta", "gaussian", "lm", "model.matrix", "pcauchy")
+importFrom("GENESIS", "makeSparseMatrix")
+
+useDynLib(MultiSTAAR, .registration = TRUE)
+
+# functions
+export(fit_null_glmmkin_multi, MultiSTAAR, MultiSTAAR_cond,
+       Indiv_Score_Test_Region_multi, Indiv_Score_Test_Region_multi_cond)
