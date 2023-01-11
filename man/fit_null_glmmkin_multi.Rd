@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_null_glmmkin_multi.R
 \name{fit_null_glmmkin_multi}
 \alias{fit_null_glmmkin_multi}
-\title{Fitting generalized linear mixed model for multiple traits with known relationship matrices
+\title{Fitting multivariate linear mixed model for multiple traits with known relationship matrices
 under the null hypothesis.}
 \usage{
 fit_null_glmmkin_multi(

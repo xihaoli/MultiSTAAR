@@ -1,4 +1,4 @@
-#' Fitting generalized linear mixed model for multiple traits with known relationship matrices
+#' Fitting multivariate linear mixed model for multiple traits with known relationship matrices
 #' under the null hypothesis.
 #'
 #' The \code{fit_null_glmmkin_multi} function is a wrapper of the \code{\link{glmmkin}} function from
@@ -71,7 +71,7 @@ fit_null_glmmkin_multi <- function(fixed, data = parent.frame(), kins, use_spars
                                    taumin = 1e-5, taumax = 1e5, tauregion = 10,
                                    verbose = FALSE, ...){
   if(is.null(kins)){
-    print("kins is NULL, fit generalized linear model.")
+    print("kins is NULL, fit multivariate linear model.")
     obj_nullmodel <- glmmkin(fixed = fixed, data = data, kins = kins, id = id,
                              random.slope = random.slope, groups = groups,
                              family = family, method = method,

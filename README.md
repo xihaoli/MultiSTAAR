@@ -3,7 +3,7 @@
 # MultiSTAAR (Multi-trait variant-Set Test for Association using Annotation infoRmation)
 This is an R package for performing MultiSTAAR procedure in whole-genome sequencing studies.
 ## Description
-MultiSTAAR is an R package for performing Multi-trait variant-Set Test for Association using Annotation infoRmation (MultiSTAAR) procedure in whole-genome sequencing (WGS) studies. MultiSTAAR is a general framework that (1) leverages the correlation structure between multiple phenotypes to improve power of multi-trait analysis over single-trait analysis, and (2) incorporates both qualitative functional categories and quantitative complementary functional annotations using an omnibus multi-dimensional weighting scheme. MultiSTAAR accounts for population structure and relatedness, and is scalable for analyzing large WGS studies of multiple traits.
+MultiSTAAR is an R package for performing Multi-trait variant-Set Test for Association using Annotation infoRmation (MultiSTAAR) procedure in whole-genome sequencing (WGS) studies. MultiSTAAR is a general framework that (1) leverages the correlation structure between multiple phenotypes to improve power of multi-trait analysis over single-trait analysis, and (2) incorporates both qualitative functional categories and quantitative complementary functional annotations using an omnibus multi-dimensional weighting scheme. MultiSTAAR accounts for population structure and relatedness, and is scalable for analyzing large WGS studies of multiple continuous traits jointly.
 ## Prerequisites
 <a href="https://www.r-project.org">R</a> (recommended version >= 3.5.1)
 
