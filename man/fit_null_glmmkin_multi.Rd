@@ -98,7 +98,7 @@ and whether the \code{kins} matrix is sparse when fitting the null model. See \c
 }
 \description{
 The \code{fit_null_glmmkin_multi} function is a wrapper of the \code{\link{glmmkin}} function from
-the \code{\link{GMMAT}} package that fits a regression model under the null hypothesis,
+the \code{\link{GMMAT}} package that fits a multivariate regression model under the null hypothesis,
 which provides the preliminary step for subsequent variant-set tests in
 whole-genome sequencing data analysis. See \code{\link{glmmkin}} for more details.
 }
