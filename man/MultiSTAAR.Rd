@@ -107,9 +107,6 @@ noncoding rare-variant associations of large-scale whole-genome sequencing
 studies. \emph{Nature Methods}, \emph{19}(12), 1599-1611.
 (\href{https://doi.org/10.1038/s41592-022-01640-x}{pub})
 
-Liu, Z. & Lin, X. (manuscript). Analyzing multiple quantitative traits in
-sequencing studies using multivariate linear mixed models.
-
 Liu, Y., et al. (2019). Acat: A fast and powerful p value combination
 method for rare-variant analysis in sequencing studies.
 \emph{The American Journal of Human Genetics}, \emph{104}(3), 410-421.

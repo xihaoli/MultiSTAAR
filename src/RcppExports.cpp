@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // Indiv_Score_Test_SMMAT_multi
 List Indiv_Score_Test_SMMAT_multi(arma::sp_mat G, arma::mat P, arma::vec residuals, int n_pheno);
 RcppExport SEXP _MultiSTAAR_Indiv_Score_Test_SMMAT_multi(SEXP GSEXP, SEXP PSEXP, SEXP residualsSEXP, SEXP n_phenoSEXP) {

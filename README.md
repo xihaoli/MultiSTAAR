@@ -3,7 +3,9 @@
 # MultiSTAAR (Multi-trait variant-Set Test for Association using Annotation infoRmation)
 This is an R package for performing MultiSTAAR procedure in whole-genome sequencing studies.
 ## Description
-MultiSTAAR is an R package for performing Multi-trait variant-Set Test for Association using Annotation infoRmation (MultiSTAAR) procedure in whole-genome sequencing (WGS) studies. MultiSTAAR is a general framework that (1) leverages the correlation structure between multiple phenotypes to improve power of multi-trait analysis over single-trait analysis, and (2) incorporates both qualitative functional categories and quantitative complementary functional annotations using an omnibus multi-dimensional weighting scheme. MultiSTAAR accounts for population structure and relatedness, and is scalable for analyzing large WGS studies of multiple continuous traits jointly.
+MultiSTAAR is an R package for performing Multi-trait variant-Set Test for Association using Annotation infoRmation (MultiSTAAR) procedure in whole-genome sequencing (WGS) studies. MultiSTAAR is a general framework that (1) leverages the correlation structure between multiple phenotypes to improve power of multi-trait analysis over single-trait analysis, and (2) incorporates both qualitative functional categories and quantitative complementary functional annotations using an omnibus multi-dimensional weighting scheme. MultiSTAAR accounts for population structure and relatedness, and is scalable for jointly analyzing large WGS studies of multiple correlated traits.
+## Workflow Overview
+![MultiSTAAR_workflow](docs/MultiSTAAR_workflow.png)
 ## Prerequisites
 <a href="https://www.r-project.org">R</a> (recommended version >= 3.5.1)
 
@@ -20,7 +22,7 @@ Please see the <a href="docs/MultiSTAAR_manual.pdf">**MultiSTAAR** user manual</
 ## Data Availability
 The whole-genome functional annotation data assembled from a variety of sources and the precomputed annotation principal components are available at the [Functional Annotation of Variant - Online Resource (FAVOR)](https://favor.genohub.org) site and [FAVOR Essential Database](https://doi.org/10.7910/DVN/1VGTJI).
 ## Version
-The current version is 0.9.7 (January 14, 2023).
+The current version is 0.9.7 (October 30, 2023).
 ## License
 This software is licensed under GPLv3.
 

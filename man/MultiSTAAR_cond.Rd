@@ -63,7 +63,7 @@ minor allele frequency > 0 and less than \code{rare_maf_cutoff} in the given var
 variant-set has minor allele frequency > 0 and less than \code{rare_maf_cutoff}.
 
 \code{results_STAAR_O_cond}: the conditional multi-trait STAAR-O (MultiSTAAR-O) p-value
-that aggregated conditional SKAT(1,25), SKAT(1,1), Burden(1,25), Burden(1,1),
+that aggregated conditional multi-trait SKAT(1,25), SKAT(1,1), Burden(1,25), Burden(1,1),
 ACAT-V(1,25), and ACAT-V(1,1) together with conditional p-values of each test weighted by
 each annotation using Cauchy method.
 
@@ -121,9 +121,6 @@ Li, Z., Li, X., et al. (2022). A framework for detecting
 noncoding rare-variant associations of large-scale whole-genome sequencing
 studies. \emph{Nature Methods}, \emph{19}(12), 1599-1611.
 (\href{https://doi.org/10.1038/s41592-022-01640-x}{pub})
-
-Liu, Z. & Lin, X. (manuscript). Analyzing multiple quantitative traits in
-sequencing studies using multivariate linear mixed models.
 
 Liu, Y., et al. (2019). Acat: A fast and powerful p value combination
 method for rare-variant analysis in sequencing studies.

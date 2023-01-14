@@ -60,7 +60,7 @@
 #' @references Chen, H., et al. (2019). Efficient variant set mixed model association tests for continuous and
 #' binary traits in large-scale whole-genome sequencing studies. \emph{The American Journal of Human Genetics}, \emph{104}(2), 260-274.
 #' (\href{https://doi.org/10.1016/j.ajhg.2018.12.012}{pub})
-#' @references Chen, H. (2021). GMMAT: Generalized linear Mixed Model Association Tests Version 1.3.2.
+#' @references Chen, H. (2023). GMMAT: Generalized linear Mixed Model Association Tests Version 1.4.1.
 #' (\href{https://cloud.r-project.org/web/packages/GMMAT/vignettes/GMMAT.pdf}{web})
 #' @export
 
@@ -80,10 +80,10 @@ fit_null_glmmkin_multi <- function(fixed, data = parent.frame(), kins, use_spars
                              tauregion = tauregion, verbose = verbose, ...)
     obj_nullmodel$sparse_kins <- TRUE
   }
-  else if(class(kins)[1] != "matrix" && !(!is.null(attr(class(kins), "package")) && attr(class(kins), "package") == "Matrix")){
+  else if(!inherits(kins, "matrix") && !inherits(kins, "Matrix")){
     stop("kins is not a matrix!")
   }
-  else if(!is.null(attr(class(kins), "package")) && attr(class(kins), "package") == "Matrix"){
+  else if(inherits(kins, "sparseMatrix")){
     print("kins is a sparse matrix.")
     obj_nullmodel <- glmmkin(fixed = fixed, data = data, kins = kins, id = id,
                              random.slope = random.slope, groups = groups,
@@ -95,7 +95,7 @@ fit_null_glmmkin_multi <- function(fixed, data = parent.frame(), kins, use_spars
   }else if(!is.null(use_sparse) && use_sparse){
     print(paste0("kins is a dense matrix, transforming it into a sparse matrix using cutoff ", kins_cutoff, "."))
     kins_sp <- makeSparseMatrix(kins, thresh = kins_cutoff)
-    if(class(kins_sp) == "dsyMatrix" || kins_cutoff <= min(kins)){
+    if(inherits(kins_sp, "dsyMatrix") || kins_cutoff <= min(kins)){
       stop(paste0("kins is still a dense matrix using cutoff ", kins_cutoff, ". Please try a larger kins_cutoff or use_sparse = FALSE!"))
     }
     rm(kins)

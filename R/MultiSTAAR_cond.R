@@ -45,7 +45,7 @@
 #' @return \code{RV_label}: the boolean vector indicating whether each variant in the given
 #' variant-set has minor allele frequency > 0 and less than \code{rare_maf_cutoff}.
 #' @return \code{results_STAAR_O_cond}: the conditional multi-trait STAAR-O (MultiSTAAR-O) p-value
-#' that aggregated conditional SKAT(1,25), SKAT(1,1), Burden(1,25), Burden(1,1),
+#' that aggregated conditional multi-trait SKAT(1,25), SKAT(1,1), Burden(1,25), Burden(1,1),
 #' ACAT-V(1,25), and ACAT-V(1,1) together with conditional p-values of each test weighted by
 #' each annotation using Cauchy method.
 #' @return \code{results_ACAT_O_cond}: the conditional multi-trait ACAT-O p-value that aggregated conditional
@@ -82,8 +82,6 @@
 #' noncoding rare-variant associations of large-scale whole-genome sequencing
 #' studies. \emph{Nature Methods}, \emph{19}(12), 1599-1611.
 #' (\href{https://doi.org/10.1038/s41592-022-01640-x}{pub})
-#' @references Liu, Z. & Lin, X. (manuscript). Analyzing multiple quantitative traits in
-#' sequencing studies using multivariate linear mixed models.
 #' @references Liu, Y., et al. (2019). Acat: A fast and powerful p value combination
 #' method for rare-variant analysis in sequencing studies.
 #' \emph{The American Journal of Human Genetics}, \emph{104}(3), 410-421.
@@ -102,7 +100,7 @@ MultiSTAAR_cond <- function(genotype,genotype_adj,obj_nullmodel,annotation_phred
                             method_cond=c("optimal","naive")){
 
   method_cond <- match.arg(method_cond) # evaluate choices
-  if(class(genotype)[1] != "matrix" && !(!is.null(attr(class(genotype), "package")) && attr(class(genotype), "package") == "Matrix")){
+  if(!inherits(genotype, "matrix") && !inherits(genotype, "Matrix")){
     stop("genotype is not a matrix!")
   }
 
@@ -115,11 +113,11 @@ MultiSTAAR_cond <- function(genotype,genotype_adj,obj_nullmodel,annotation_phred
     stop(paste0("Dimensions don't match for genotype and annotation!"))
   }
 
-  if(!is.null(attr(class(genotype), "package")) && attr(class(genotype), "package") == "Matrix"){
+  if(inherits(genotype, "sparseMatrix")){
     genotype <- as.matrix(genotype)
   }
 
-  if(class(genotype_adj)[1] == "numeric"){
+  if(inherits(genotype_adj, "numeric")){
     genotype_adj <- matrix(genotype_adj, ncol=1)
   }
 
