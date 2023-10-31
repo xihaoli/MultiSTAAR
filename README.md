@@ -1,4 +1,5 @@
 [![R build status](https://github.com/xihaoli/MultiSTAAR/workflows/R-CMD-check/badge.svg)](https://github.com/xihaoli/MultiSTAAR/actions)
+[![Build status](https://ci.appveyor.com/api/projects/status/yd5luexd87en4eyk/branch/main?svg=true)](https://ci.appveyor.com/project/xihaoli/multistaar/branch/main)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # MultiSTAAR (Multi-trait variant-Set Test for Association using Annotation infoRmation)
