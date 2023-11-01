@@ -1,4 +1,5 @@
 [![R build status](https://github.com/xihaoli/MultiSTAAR/workflows/R-CMD-check/badge.svg)](https://github.com/xihaoli/MultiSTAAR/actions)
+[![Build Status](https://travis-ci.com/xihaoli/MultiSTAAR.svg?branch=main)](https://app.travis-ci.com/xihaoli/MultiSTAAR)
 [![Build status](https://ci.appveyor.com/api/projects/status/yd5luexd87en4eyk/branch/main?svg=true)](https://ci.appveyor.com/project/xihaoli/multistaar/branch/main)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -18,6 +19,11 @@ MultiSTAAR links to R packages <a href="https://cran.r-project.org/web/packages/
 ```
 library(devtools)
 devtools::install_github("xihaoli/MultiSTAAR",ref="main")
+```
+## Docker Image
+A [docker image for MultiSTAAR](https://hub.docker.com/repository/docker/zilinli/staarpipeline), including R (version 3.6.1) built with Intel MKL and all STAAR-related packages (STAAR, MultiSTAAR, SCANG, STAARpipeline, STAARpipelineSummary) pre-installed, is located in the Docker Hub. The docker image can be pulled using
+```
+docker pull zilinli/staarpipeline:0.9.7
 ```
 ## Usage
 Please see the <a href="docs/MultiSTAAR_manual.pdf">**MultiSTAAR** user manual</a> for detailed usage of MultiSTAAR package. Please see the <a href="https://github.com/xihaoli/STAARpipeline-Tutorial">**STAARpipeline** tutorial</a> for a detailed example of analyzing sequencing data using MultiSTAAR.
