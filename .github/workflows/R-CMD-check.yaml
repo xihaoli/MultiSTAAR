@@ -22,7 +22,7 @@ jobs:
           extra-packages: |
             bioc::GENESIS
             github::xihaoli/STAAR
-            any::rmdcheck
+            any::rcmdcheck
           needs: |
             website
             coverage
