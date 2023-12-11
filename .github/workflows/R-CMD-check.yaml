@@ -18,20 +18,13 @@ jobs:
         with:
           r-version: 4.2.3
       - uses: r-lib/actions/setup-r-dependencies@v2
-      - name: Install BiocManager
-        run: |
-          if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-        shell: Rscript {0}
-      - name: Install GENESIS
-        run: |
-          BiocManager::install("GENESIS")
-        shell: Rscript {0}
-      - name: Install dependencies
-        run: |
-          install.packages(c("remotes", "rcmdcheck"))
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_github("xihaoli/STAAR")
-        shell: Rscript {0}
+        with:
+          extra-packages: |
+            bioc::GENESIS
+            github::xihaoli/STAAR
+          needs: |
+            website
+            coverage
       - name: Check
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
