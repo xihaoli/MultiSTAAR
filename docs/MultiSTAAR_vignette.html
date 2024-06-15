@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Xihao Li and Zilin Li" />
+
+<meta name="date" content="2024-06-15" />
+
+<title>A statistical framework for powerful multi-trait rare variant analysis in large-scale whole-genome sequencing studies</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A statistical framework for powerful
+multi-trait rare variant analysis in large-scale whole-genome sequencing
+studies</h1>
+<h4 class="author">Xihao Li and Zilin Li</h4>
+<h4 class="date">2024-06-15</h4>
+
+
+
+<p>The <code>MultiSTAAR</code> package accompanies the paper “A
+statistical framework for powerful multi-trait rare variant analysis in
+large-scale whole-genome sequencing studies” and is designed for
+detecting rare variant associations with multiple phenotypes in
+whole-genome sequencing studies.</p>
+<p>Note: The following results are depending on R 4.2.3. The results
+could be different on other R versions due to different random number
+generator.</p>
+<div id="data-set-up-generating-signal-regions-covariates-family-structure" class="section level2">
+<h2>Data set-up: Generating signal regions, covariates,
+family-structure</h2>
+<p>The genotype data was generated by simulating 10,000 samples for a 1
+megabase (Mb) region using the calibration coalescent model (COSI). The
+data were generated to mimic the linkage disequilibrium structure of an
+African-American population by using COSI. We analyzed 30,095 low
+frequency and rare variants (minor allele frequency, MAF &lt; 0.05) in
+the sequence.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(Matrix)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(STAAR)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(MultiSTAAR)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(kinship2) <span class="co"># for related samples</span></span></code></pre></div>
+<pre><code>## Loading required package: quadprog</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(matrixStats) </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">library</span>(rje)      <span class="co"># for expit() function</span></span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;rje&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
+## 
+##     rowMaxs, rowMins</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>genotype <span class="ot">&lt;-</span> example<span class="sc">$</span>genotype</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>maf <span class="ot">&lt;-</span> example<span class="sc">$</span>maf</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>snploc <span class="ot">&lt;-</span> example<span class="sc">$</span>snploc</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">sum</span>((maf<span class="sc">&gt;</span><span class="dv">0</span>)<span class="sc">*</span>(maf<span class="sc">&lt;</span><span class="fl">0.05</span>))</span></code></pre></div>
+<pre><code>## [1] 30095</code></pre>
+<p>We simulated 2,500 families and each family has 4 individuals. The
+kinship matrix is generated as follows:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">## kinship</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>Npercell <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>ndiv <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>vfam <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">round</span>(grid<span class="sc">*</span>grid<span class="sc">*</span>Npercell<span class="sc">/</span>ndiv)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>unitmat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fl">0.5</span>, <span class="dv">4</span>, <span class="dv">4</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="fu">diag</span>(unitmat) <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>unitmat[<span class="dv">1</span>,<span class="dv">2</span>] <span class="ot">&lt;-</span> unitmat[<span class="dv">2</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>ped <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">famid =</span> <span class="fu">rep</span>(<span class="fu">as.integer</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2500</span>), <span class="at">each=</span><span class="dv">4</span>), <span class="at">id =</span> <span class="fu">as.integer</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span><span class="dt">L</span>), <span class="at">fa =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10000</span>), <span class="at">mo =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10000</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2500</span>) {</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  ped<span class="sc">$</span>fa[<span class="dv">4</span><span class="sc">*</span>i<span class="sc">-</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> ped<span class="sc">$</span>id[<span class="dv">4</span><span class="sc">*</span>i<span class="dv">-3</span>]</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    ped<span class="sc">$</span>mo[<span class="dv">4</span><span class="sc">*</span>i<span class="sc">-</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> ped<span class="sc">$</span>id[<span class="dv">4</span><span class="sc">*</span>i<span class="dv">-2</span>]</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>}</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>kins <span class="ot">&lt;-</span> <span class="fu">makekinship</span>(ped<span class="sc">$</span>famid, ped<span class="sc">$</span>id, ped<span class="sc">$</span>fa, ped<span class="sc">$</span>mo)</span></code></pre></div>
+<p>We generated two covariates, one is continuous, the other one is
+binary.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">800</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>X1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(N,<span class="dv">1</span>,<span class="fl">0.5</span>)</span></code></pre></div>
+<p>We generated 10 functional annotations.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>numVar <span class="ot">&lt;-</span> <span class="fu">dim</span>(snploc)[<span class="dv">1</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>Z1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>Z2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>Z3 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>Z4 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>Z5 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>Z6 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>Z7 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>Z8 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>Z9 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>Z10 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(numVar)</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Z1,Z2,Z3,Z4,Z5,Z6,Z7,Z8,Z9,Z10)</span></code></pre></div>
+<p>We calculated the Phred score of the 10 annotations. Note that the
+input of annotations for MultiSTAAR function was at Phred scale
+(<code>annotation_phred</code>). In practice, the Phred score is
+calculated based on all variants across the genome, available from the
+FAVOR database (<a href="https://favor.genohub.org" class="uri">https://favor.genohub.org</a>).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>rank <span class="ot">&lt;-</span> <span class="fu">colRanks</span>(Z,<span class="at">preserveShape =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>PHRED <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span><span class="sc">*</span><span class="fu">log10</span>(<span class="dv">1</span><span class="sc">-</span>rank<span class="sc">/</span><span class="fu">dim</span>(rank)[<span class="dv">1</span>])</span></code></pre></div>
+<p>We randomly selected a 5-kilobase (kb) signal region
+(genotype-phenotype association regions) across the 1-Mb region.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Length of the sequence</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>maxLength <span class="ot">&lt;-</span> <span class="dv">1000000</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co"># Length of the signal region</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>sigLength <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Location of the signal region</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>startloc <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(maxLength<span class="sc">-</span>sigLength<span class="sc">+</span><span class="dv">1</span>),<span class="dv">1</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>endloc <span class="ot">&lt;-</span> startloc <span class="sc">+</span> sigLength <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co"># Extract the signal region from snploc</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>snplist <span class="ot">&lt;-</span> <span class="fu">which</span>(snploc<span class="sc">$</span>CHROM_POS <span class="sc">&gt;=</span> startloc <span class="sc">&amp;</span> snploc<span class="sc">$</span>CHROM_POS <span class="sc">&lt;=</span> endloc)</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>snpRegion <span class="ot">&lt;-</span> snploc[snplist,]</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co"># number of variants in the signal region</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>numSNPs <span class="ot">&lt;-</span> <span class="fu">dim</span>(snpRegion)[<span class="dv">1</span>]</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co"># genotype of the signal region</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>Geno <span class="ot">&lt;-</span> genotype[,snplist]</span></code></pre></div>
+<p>We first randomly select 5 annotations to determine the probability
+of variants being causal in the region through a logistic model. We then
+randomly selected casual variants based on these probabilities. More
+details could be found in the Methods Section.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Simulate causal variants from this region</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>b0 <span class="ot">&lt;-</span> rje<span class="sc">::</span><span class="fu">logit</span>(<span class="fl">0.015</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="dv">5</span>),<span class="dv">10</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>causalprob <span class="ot">&lt;-</span> <span class="fu">apply</span>(Z[snplist,],<span class="dv">1</span>,<span class="cf">function</span>(z){</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>  ind <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">5</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>  rje<span class="sc">::</span><span class="fu">expit</span>(b0 <span class="sc">+</span> b[ind] <span class="sc">%*%</span> z[ind])</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>})</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>isCausal <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(numSNPs,<span class="dv">1</span>,causalprob)</span></code></pre></div>
+</div>
+<div id="analyzing-the-simulated-data-using-multistaar" class="section level2">
+<h2>Analyzing the simulated data using MultiSTAAR</h2>
+<div id="unrelated-samples" class="section level3">
+<h3>Unrelated samples</h3>
+<p>To illustrate the MultiSTAAR method for multi-trait anlaysis, we
+consider the joint analysis of 3 phenotypes. The phenotype of unrelated
+samples was generated through a multivariate linear model (MLM), with
+the phenotypic correlation structure mimicking that of the lipid trait
+analysis of LDL-C, HDL-C, and triglycerides from real data, that is,
+<span class="math display">\[
+\boldsymbol{\Sigma} = \text{Cov}\left(\boldsymbol{Y}\right) =
+\text{Cov}\left(\begin{array}{c} Y_1 \\ Y_2 \\ Y_3 \end{array}\right) =
+\left[\begin{array}{ccc} 1 &amp; -0.1 &amp; 0.2 \\ -0.1 &amp; 1 &amp;
+-0.4 \\ 0.2 &amp; -0.4 &amp; 1 \end{array}\right]
+\]</span> Without loss of generality, we set the causal variants to
+affect two positively correlated phenotypes (i.e. <span class="math inline">\(Y_1\)</span> and <span class="math inline">\(Y_3\)</span>), and set the effect sizes as a
+decreasing function of MAFs, beta=-0.1*log10(MAF). The coefficients for
+the causal variants were all positive.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># effects size of covariates </span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>alpha0 <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>alpha1 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>alpha2 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># effect size of causal variants</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>c0 <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="sc">-</span><span class="fl">0.4</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co"># Generate error distributions</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>eps <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(N, <span class="at">mu =</span> mu, <span class="at">Sigma =</span> Sigma)</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="sc">-</span>c0 <span class="sc">*</span> <span class="fu">log10</span>(maf[snplist][<span class="fu">which</span>(isCausal<span class="sc">==</span><span class="dv">1</span>)])</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co"># generate multi-phenotype data</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>Y1 <span class="ot">&lt;-</span> alpha0 <span class="sc">+</span> alpha1 <span class="sc">*</span> X1 <span class="sc">+</span> alpha2 <span class="sc">*</span> X2 <span class="sc">+</span> <span class="fu">as.matrix</span>(genotype)[,snplist][,<span class="fu">which</span>(isCausal<span class="sc">==</span><span class="dv">1</span>)] <span class="sc">%*%</span> beta <span class="sc">+</span> eps[,<span class="dv">1</span>]</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>Y2 <span class="ot">&lt;-</span> alpha0 <span class="sc">+</span> alpha1 <span class="sc">*</span> X1 <span class="sc">+</span> alpha2 <span class="sc">*</span> X2 <span class="sc">+</span> eps[,<span class="dv">2</span>]</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>Y3 <span class="ot">&lt;-</span> alpha0 <span class="sc">+</span> alpha1 <span class="sc">*</span> X1 <span class="sc">+</span> alpha2 <span class="sc">*</span> X2 <span class="sc">+</span> <span class="fu">as.matrix</span>(genotype)[,snplist][,<span class="fu">which</span>(isCausal<span class="sc">==</span><span class="dv">1</span>)] <span class="sc">%*%</span> beta <span class="sc">+</span> eps[,<span class="dv">3</span>]</span></code></pre></div>
+<p>We applied MultiSTAAR to analyze the simulated data set. We first fit
+the null model using MLM.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Fitting MultiSTAAR null model for unrelated samples using fit_null_glmmkin_multi()</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y1=</span>Y1,<span class="at">Y2=</span>Y2,<span class="at">Y3=</span>Y3,<span class="at">X1=</span>X1,<span class="at">X2=</span>X2,<span class="at">id=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N))</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>obj_nullmodel <span class="ot">&lt;-</span> MultiSTAAR<span class="sc">::</span><span class="fu">fit_null_glmmkin_multi</span>(<span class="fu">cbind</span>(Y1,Y2,Y3)<span class="sc">~</span>X1<span class="sc">+</span>X2,<span class="at">data=</span>pheno,<span class="at">family=</span><span class="fu">gaussian</span>(<span class="at">link=</span><span class="st">&quot;identity&quot;</span>),<span class="at">kins=</span><span class="cn">NULL</span>,<span class="at">id=</span><span class="st">&quot;id&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;kins is NULL, fit multivariate linear model.&quot;
+## Fitting a multiple phenotype analysis model...</code></pre>
+<p>We then applied MultiSTAAR to test for the association.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>pvalues <span class="ot">&lt;-</span> <span class="fu">MultiSTAAR</span>(<span class="at">genotype=</span>Geno,<span class="at">obj_nullmodel=</span>obj_nullmodel,<span class="at">annotation_phred=</span>PHRED[snplist,],<span class="at">rare_maf_cutoff=</span><span class="fl">0.05</span>)</span></code></pre></div>
+<p>Output of MultiSTAAR are as follows: The number of variants in the
+region is</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>pvalues<span class="sc">$</span>num_variant</span></code></pre></div>
+<pre><code>## [1] 163</code></pre>
+<p>The MultiSTAAR-O P-value is</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_O <span class="co"># STAAR-O refers to MultiSTAAR-O as part of STAARpipeline</span></span></code></pre></div>
+<pre><code>## [1] 1.223356e-09</code></pre>
+<p>The P-values of conventional tests SKAT-MT, Burden-MT and ACAT-V-MT
+(MT is short for Multi-Trait) are</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># SKAT-MT</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_S_1_25[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>##     SKAT(1,25)
+## 1 9.900846e-05</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># Burden-MT</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_B_1_1[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>##    Burden(1,1)
+## 1 1.217335e-07</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># ACAT-V-MT</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_A_1_25[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>##   ACAT-V(1,25)
+## 1 1.302948e-06</code></pre>
+<p>Note that (1) the existing ACAT-V method does not support multi-trait
+analysis, and we have extended it to accommodate multi-trait settings
+and incorporated the multi-trait ACAT-V test into the MultiSTAAR
+framework; (2) this region is detected by MultiSTAAR-O at significance
+level 1E-07, but missed by all conventional tests without incorporating
+functional annotations as weights.</p>
+<p>The Output also includes the P-values of the three conventional tests
+weighted by each annotation. Note that MultiSTAAR-O combines P-values
+across different types of multiple annotation-weighted variant set
+tests. More details could be found in the Methods Section.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># MultiSTAAR-SKAT(1,25)</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_S_1_25</span></code></pre></div>
+<pre><code>##     SKAT(1,25) SKAT(1,25)-V1 SKAT(1,25)-V2 SKAT(1,25)-V3 SKAT(1,25)-V4
+## 1 9.900846e-05  0.0001548373  5.497672e-05  0.0006616758  4.690034e-05
+##   SKAT(1,25)-V5 SKAT(1,25)-V6 SKAT(1,25)-V7 SKAT(1,25)-V8 SKAT(1,25)-V9
+## 1  4.888811e-05  0.0001236429   0.001508233  2.496575e-05  0.0001469972
+##   SKAT(1,25)-V10 STAAR-S(1,25)
+## 1   0.0001862741  7.912927e-05</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># MultiSTAAR-SKAT(1,1)</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_S_1_1</span></code></pre></div>
+<pre><code>##      SKAT(1,1) SKAT(1,1)-V1 SKAT(1,1)-V2 SKAT(1,1)-V3 SKAT(1,1)-V4 SKAT(1,1)-V5
+## 1 1.872396e-05 1.735012e-05 4.823432e-06 0.0001079916 2.604319e-05 4.649382e-06
+##   SKAT(1,1)-V6 SKAT(1,1)-V7 SKAT(1,1)-V8 SKAT(1,1)-V9 SKAT(1,1)-V10
+## 1 1.269354e-05  0.001113238 5.078096e-06 0.0001178352  3.567062e-05
+##   STAAR-S(1,1)
+## 1  1.23011e-05</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co"># MultiSTAAR-Burden(1,25)</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_B_1_25</span></code></pre></div>
+<pre><code>##   Burden(1,25) Burden(1,25)-V1 Burden(1,25)-V2 Burden(1,25)-V3 Burden(1,25)-V4
+## 1   5.6782e-06    1.107935e-05    3.355533e-06    0.0003721328    2.291535e-06
+##   Burden(1,25)-V5 Burden(1,25)-V6 Burden(1,25)-V7 Burden(1,25)-V8
+## 1    6.661133e-09    1.253032e-06      0.04357299    5.157681e-09
+##   Burden(1,25)-V9 Burden(1,25)-V10 STAAR-B(1,25)
+## 1    9.208454e-06      3.06706e-06  3.176928e-08</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># MultiSTAAR-Burden(1,1)</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_B_1_1</span></code></pre></div>
+<pre><code>##    Burden(1,1) Burden(1,1)-V1 Burden(1,1)-V2 Burden(1,1)-V3 Burden(1,1)-V4
+## 1 1.217335e-07   2.702175e-07   1.742909e-08   1.656506e-05   2.736571e-07
+##   Burden(1,1)-V5 Burden(1,1)-V6 Burden(1,1)-V7 Burden(1,1)-V8 Burden(1,1)-V9
+## 1   2.092416e-11   5.396171e-08     0.01925176   1.763428e-10   1.531655e-06
+##   Burden(1,1)-V10 STAAR-B(1,1)
+## 1    1.555626e-07 2.053734e-10</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co"># MultiSTAAR-ACAT-V(1,25)</span></span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_A_1_25</span></code></pre></div>
+<pre><code>##   ACAT-V(1,25) ACAT-V(1,25)-V1 ACAT-V(1,25)-V2 ACAT-V(1,25)-V3 ACAT-V(1,25)-V4
+## 1 1.302948e-06    1.058229e-06    9.316259e-07     1.48792e-06    1.366473e-06
+##   ACAT-V(1,25)-V5 ACAT-V(1,25)-V6 ACAT-V(1,25)-V7 ACAT-V(1,25)-V8
+## 1    9.121345e-07    1.078373e-06    2.560687e-06    7.813792e-07
+##   ACAT-V(1,25)-V9 ACAT-V(1,25)-V10 STAAR-A(1,25)
+## 1    2.432194e-06     1.093715e-06  1.194461e-06</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="co"># MultiSTAAR-ACAT-V(1,1)</span></span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_A_1_1</span></code></pre></div>
+<pre><code>##    ACAT-V(1,1) ACAT-V(1,1)-V1 ACAT-V(1,1)-V2 ACAT-V(1,1)-V3 ACAT-V(1,1)-V4
+## 1 3.545696e-07    3.07354e-07   2.598456e-07   4.118761e-07   3.883808e-07
+##   ACAT-V(1,1)-V5 ACAT-V(1,1)-V6 ACAT-V(1,1)-V7 ACAT-V(1,1)-V8 ACAT-V(1,1)-V9
+## 1   2.503996e-07   3.032076e-07   7.227531e-07   2.384485e-07   6.340111e-07
+##   ACAT-V(1,1)-V10 STAAR-A(1,1)
+## 1    3.205685e-07 3.385571e-07</code></pre>
+</div>
+<div id="related-samples" class="section level3">
+<h3>Related samples</h3>
+<p>The phenotype of related samples was generated through a multivariate
+linear mixed effects model (MLMM).</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">800</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a><span class="do">## random effect</span></span>
+<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a>randomfam <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(N<span class="sc">/</span><span class="dv">4</span><span class="sc">*</span><span class="dv">3</span>, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), vfam <span class="sc">*</span> unitmat)</span>
+<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a>randomfam <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">as.vector</span>(<span class="fu">t</span>(randomfam)),<span class="at">ncol=</span><span class="dv">3</span>)</span>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" tabindex="-1"></a><span class="co"># generate multi-phenotype data</span></span>
+<span id="cb40-7"><a href="#cb40-7" tabindex="-1"></a>Y1 <span class="ot">&lt;-</span> alpha0 <span class="sc">+</span> alpha1 <span class="sc">*</span> X1 <span class="sc">+</span> alpha2 <span class="sc">*</span> X2 <span class="sc">+</span> <span class="fu">as.matrix</span>(genotype)[,snplist][,<span class="fu">which</span>(isCausal<span class="sc">==</span><span class="dv">1</span>)] <span class="sc">%*%</span> beta <span class="sc">+</span> randomfam[,<span class="dv">1</span>] <span class="sc">+</span> eps[,<span class="dv">1</span>]</span>
+<span id="cb40-8"><a href="#cb40-8" tabindex="-1"></a>Y2 <span class="ot">&lt;-</span> alpha0 <span class="sc">+</span> alpha1 <span class="sc">*</span> X1 <span class="sc">+</span> alpha2 <span class="sc">*</span> X2 <span class="sc">+</span> randomfam[,<span class="dv">2</span>] <span class="sc">+</span> eps[,<span class="dv">2</span>]</span>
+<span id="cb40-9"><a href="#cb40-9" tabindex="-1"></a>Y3 <span class="ot">&lt;-</span> alpha0 <span class="sc">+</span> alpha1 <span class="sc">*</span> X1 <span class="sc">+</span> alpha2 <span class="sc">*</span> X2 <span class="sc">+</span> <span class="fu">as.matrix</span>(genotype)[,snplist][,<span class="fu">which</span>(isCausal<span class="sc">==</span><span class="dv">1</span>)] <span class="sc">%*%</span> beta <span class="sc">+</span> randomfam[,<span class="dv">3</span>] <span class="sc">+</span> eps[,<span class="dv">3</span>]</span></code></pre></div>
+<div id="analyzing-data-using-sparse-grm" class="section level4">
+<h4>Analyzing data using sparse GRM</h4>
+<p>We applied STAAR to analyze the simulated data set. Note that the
+genetic relatedness matrix (GRM) was a sparse matrix. We first fit the
+null model using MLMM.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co"># Fitting STAAR null model for related samples using fit_null_glmmkin()</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y1=</span>Y1,<span class="at">Y2=</span>Y2,<span class="at">Y3=</span>Y3,<span class="at">X1=</span>X1,<span class="at">X2=</span>X2,<span class="at">id=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>N))</span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>obj_nullmodel <span class="ot">&lt;-</span> MultiSTAAR<span class="sc">::</span><span class="fu">fit_null_glmmkin_multi</span>(<span class="fu">cbind</span>(Y1,Y2,Y3)<span class="sc">~</span>X1<span class="sc">+</span>X2,<span class="at">data=</span>pheno,<span class="at">family=</span><span class="fu">gaussian</span>(<span class="at">link=</span><span class="st">&quot;identity&quot;</span>),<span class="at">kins=</span>kins,<span class="at">id=</span><span class="st">&quot;id&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;kins is a sparse matrix.&quot;
+## Fitting a multiple phenotype analysis model...</code></pre>
+<p>We then applied MultiSTAAR to test for the association.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>pvalues <span class="ot">&lt;-</span> <span class="fu">MultiSTAAR</span>(<span class="at">genotype=</span>Geno,<span class="at">obj_nullmodel=</span>obj_nullmodel,<span class="at">annotation_phred=</span>PHRED[snplist,],<span class="at">rare_maf_cutoff=</span><span class="fl">0.05</span>)</span></code></pre></div>
+<p>Output of MultiSTAAR are as follows: The number of variants in the
+region is</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>pvalues<span class="sc">$</span>num_variant</span></code></pre></div>
+<pre><code>## [1] 163</code></pre>
+<p>The MultiSTAAR-O P-value is</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_O</span></code></pre></div>
+<pre><code>## [1] 8.073734e-08</code></pre>
+<p>The P-values of conventional tests SKAT-MT, Burden-MT and ACAT-V-MT
+are</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="co"># SKAT-MT</span></span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_S_1_25[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>##     SKAT(1,25)
+## 1 0.0002621043</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="co"># Burden-MT</span></span>
+<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_B_1_1[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>##    Burden(1,1)
+## 1 4.988538e-06</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="co"># ACAT-V-MT</span></span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_A_1_25[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>##   ACAT-V(1,25)
+## 1 1.800209e-05</code></pre>
+<p>Note that this region is detected by MultiSTAAR-O at significance
+level 1E-07, but missed by all conventional tests.</p>
+<p>The Output also includes the P-values of the three conventional tests
+weighted by each annotation. Note that MultiSTAAR-O combines P-values
+across different types of multiple annotation-weighted variant set
+tests. More details could be found in the Methods Section.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co"># MultiSTAAR-SKAT(1,25)</span></span>
+<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_S_1_25</span></code></pre></div>
+<pre><code>##     SKAT(1,25) SKAT(1,25)-V1 SKAT(1,25)-V2 SKAT(1,25)-V3 SKAT(1,25)-V4
+## 1 0.0002621043  0.0003876568  0.0003947216   0.002392835  0.0001939802
+##   SKAT(1,25)-V5 SKAT(1,25)-V6 SKAT(1,25)-V7 SKAT(1,25)-V8 SKAT(1,25)-V9
+## 1  0.0001079873   0.000276738   0.004530431   0.000103593    0.00055902
+##   SKAT(1,25)-V10 STAAR-S(1,25)
+## 1   0.0004952503  0.0002679191</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="co"># MultiSTAAR-SKAT(1,1)</span></span>
+<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_S_1_1</span></code></pre></div>
+<pre><code>##      SKAT(1,1) SKAT(1,1)-V1 SKAT(1,1)-V2 SKAT(1,1)-V3 SKAT(1,1)-V4 SKAT(1,1)-V5
+## 1 7.555745e-05 6.594469e-05 2.535358e-05 0.0005245798 0.0001302785 1.679239e-05
+##   SKAT(1,1)-V6 SKAT(1,1)-V7 SKAT(1,1)-V8 SKAT(1,1)-V9 SKAT(1,1)-V10
+## 1 4.121816e-05  0.004145226 2.293102e-05 0.0005739689  0.0001490876
+##   STAAR-S(1,1)
+## 1 5.151371e-05</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a><span class="co"># MultiSTAAR-Burden(1,25)</span></span>
+<span id="cb58-2"><a href="#cb58-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_B_1_25</span></code></pre></div>
+<pre><code>##   Burden(1,25) Burden(1,25)-V1 Burden(1,25)-V2 Burden(1,25)-V3 Burden(1,25)-V4
+## 1 6.099546e-05    1.983406e-05    6.890073e-05     0.001789274    7.043064e-05
+##   Burden(1,25)-V5 Burden(1,25)-V6 Burden(1,25)-V7 Burden(1,25)-V8
+## 1    5.185125e-08    4.743794e-06       0.1084843    3.256258e-07
+##   Burden(1,25)-V9 Burden(1,25)-V10 STAAR-B(1,25)
+## 1    0.0001052625     1.290962e-05  4.834994e-07</code></pre>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a><span class="co"># MultiSTAAR-Burden(1,1)</span></span>
+<span id="cb60-2"><a href="#cb60-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_B_1_1</span></code></pre></div>
+<pre><code>##    Burden(1,1) Burden(1,1)-V1 Burden(1,1)-V2 Burden(1,1)-V3 Burden(1,1)-V4
+## 1 4.988538e-06   2.315463e-06   1.327871e-06   0.0002390473   1.471232e-05
+##   Burden(1,1)-V5 Burden(1,1)-V6 Burden(1,1)-V7 Burden(1,1)-V8 Burden(1,1)-V9
+## 1   1.326113e-09   8.047858e-07     0.08056142   2.918196e-08   4.922934e-05
+##   Burden(1,1)-V10 STAAR-B(1,1)
+## 1    2.700378e-06 1.389868e-08</code></pre>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="co"># MultiSTAAR-ACAT-V(1,25)</span></span>
+<span id="cb62-2"><a href="#cb62-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_A_1_25</span></code></pre></div>
+<pre><code>##   ACAT-V(1,25) ACAT-V(1,25)-V1 ACAT-V(1,25)-V2 ACAT-V(1,25)-V3 ACAT-V(1,25)-V4
+## 1 1.800209e-05    1.462124e-05    1.287377e-05      2.0562e-05    1.888234e-05
+##   ACAT-V(1,25)-V5 ACAT-V(1,25)-V6 ACAT-V(1,25)-V7 ACAT-V(1,25)-V8
+## 1    1.260162e-05    1.489818e-05    3.538474e-05    1.079686e-05
+##   ACAT-V(1,25)-V9 ACAT-V(1,25)-V10 STAAR-A(1,25)
+## 1    3.361357e-05     1.511034e-05  1.650412e-05</code></pre>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a><span class="co"># MultiSTAAR-ACAT-V(1,1)</span></span>
+<span id="cb64-2"><a href="#cb64-2" tabindex="-1"></a>pvalues<span class="sc">$</span>results_STAAR_A_1_1</span></code></pre></div>
+<pre><code>##    ACAT-V(1,1) ACAT-V(1,1)-V1 ACAT-V(1,1)-V2 ACAT-V(1,1)-V3 ACAT-V(1,1)-V4
+## 1 4.899052e-06   4.246648e-06   3.590288e-06   5.691206e-06   5.366619e-06
+##   ACAT-V(1,1)-V5 ACAT-V(1,1)-V6 ACAT-V(1,1)-V7 ACAT-V(1,1)-V8 ACAT-V(1,1)-V9
+## 1   3.459628e-06   4.189262e-06   9.986816e-06   3.294646e-06   8.761766e-06
+##   ACAT-V(1,1)-V10 STAAR-A(1,1)
+## 1    4.429252e-06 4.677886e-06</code></pre>
+</div>
+</div>
+<div id="session-info" class="section level3">
+<h3>Session Info</h3>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.2.3 (2023-03-15)
+## Platform: x86_64-apple-darwin17.0 (64-bit)
+## Running under: macOS Big Sur ... 10.16
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] rje_1.12.1         matrixStats_0.63.0 MASS_7.3-59        kinship2_1.9.6    
+## [5] quadprog_1.5-8     MultiSTAAR_0.9.7   STAAR_0.9.7        Matrix_1.5-4      
+## 
+## loaded via a namespace (and not attached):
+##  [1] Biobase_2.58.0         sass_0.4.5             tidyr_1.3.0           
+##  [4] bit64_4.0.5            jsonlite_1.8.4         splines_4.2.3         
+##  [7] foreach_1.5.2          bslib_0.4.2            GMMAT_1.4.0           
+## [10] stats4_4.2.3           GWASTools_1.44.0       blob_1.2.4            
+## [13] GenomeInfoDbData_1.2.9 GWASExactHW_1.01       yaml_2.3.7            
+## [16] GENESIS_2.28.0         pillar_1.9.0           RSQLite_2.3.1         
+## [19] backports_1.4.1        lattice_0.21-8         quantreg_5.95         
+## [22] glue_1.6.2             digest_0.6.31          GenomicRanges_1.50.2  
+## [25] XVector_0.38.0         sandwich_3.0-2         htmltools_0.5.5       
+## [28] pkgconfig_2.0.3        broom_1.0.4            SparseM_1.81          
+## [31] zlibbioc_1.44.0        purrr_1.0.1            MatrixModels_0.5-1    
+## [34] SeqVarTools_1.36.0     BiocParallel_1.32.6    tibble_3.2.1          
+## [37] mgcv_1.8-42            generics_0.1.3         IRanges_2.32.0        
+## [40] cachem_1.0.7           BiocGenerics_0.44.0    formula.tools_1.7.1   
+## [43] cli_3.6.1              SNPRelate_1.32.2       survival_3.5-5        
+## [46] magrittr_2.0.3         crayon_1.5.2           memoise_2.0.1         
+## [49] evaluate_0.21          mice_3.15.0            fansi_1.0.4           
+## [52] operator.tools_1.6.3   nlme_3.1-162           SeqArray_1.38.0       
+## [55] tools_4.2.3            data.table_1.14.8      lifecycle_1.0.3       
+## [58] S4Vectors_0.36.2       gdsfmt_1.34.1          Biostrings_2.66.0     
+## [61] compiler_4.2.3         jquerylib_0.1.4        GenomeInfoDb_1.34.9   
+## [64] logistf_1.24.1         rlang_1.1.1            grid_4.2.3            
+## [67] RCurl_1.98-1.12        iterators_1.0.14       rstudioapi_0.14       
+## [70] CompQuadForm_1.4.3     bitops_1.0-7           rmarkdown_2.21        
+## [73] DNAcopy_1.72.3         codetools_0.2-19       DBI_1.1.3             
+## [76] R6_2.5.1               zoo_1.8-12             knitr_1.43            
+## [79] dplyr_1.1.2            fastmap_1.1.1          bit_4.0.5             
+## [82] utf8_1.2.3             quantsmooth_1.64.0     parallel_4.2.3        
+## [85] Rcpp_1.0.10            vctrs_0.6.2            lmtest_0.9-40         
+## [88] tidyselect_1.2.0       xfun_0.39</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

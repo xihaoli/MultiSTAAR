@@ -1,5 +1,4 @@
 [![R build status](https://github.com/xihaoli/MultiSTAAR/workflows/R-CMD-check/badge.svg)](https://github.com/xihaoli/MultiSTAAR/actions)
-[![Build Status](https://travis-ci.com/xihaoli/MultiSTAAR.svg?branch=main)](https://app.travis-ci.com/xihaoli/MultiSTAAR)
 [![Build status](https://ci.appveyor.com/api/projects/status/yd5luexd87en4eyk/branch/main?svg=true)](https://ci.appveyor.com/project/xihaoli/multistaar/branch/main)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -26,11 +25,11 @@ A [docker image for MultiSTAAR](https://hub.docker.com/repository/docker/zilinli
 docker pull zilinli/staarpipeline:0.9.7
 ```
 ## Usage
-Please see the <a href="docs/MultiSTAAR_manual.pdf">**MultiSTAAR** user manual</a> for detailed usage of MultiSTAAR package. Please see the <a href="https://github.com/xihaoli/STAARpipeline-Tutorial">**STAARpipeline** tutorial</a> for a detailed example of analyzing sequencing data using MultiSTAAR.
+Please see the <a href="docs/MultiSTAAR_manual.pdf">**MultiSTAAR** user manual</a> for detailed usage of MultiSTAAR package. Please see the <a href="https://htmlpreview.github.io/?https://github.com/xihaoli/MultiSTAAR/blob/master/docs/MultiSTAAR_vignette.html">**MultiSTAAR** tutorial</a> for an example of analyzing sequencing data using MultiSTAAR procedure. Please see the <a href="https://github.com/xihaoli/STAARpipeline-Tutorial">**STAARpipeline** tutorial</a> for a detailed example of analyzing sequencing data using MultiSTAAR.
 ## Data Availability
 The whole-genome functional annotation data assembled from a variety of sources and the precomputed annotation principal components are available at the [Functional Annotation of Variant - Online Resource (FAVOR)](https://favor.genohub.org) site and [FAVOR Essential Database](https://doi.org/10.7910/DVN/1VGTJI).
 ## Version
-The current version is 0.9.7 (October 30, 2023).
+The current version is 0.9.7 (June 15, 2024).
 ## License
 This software is licensed under GPLv3.
 
