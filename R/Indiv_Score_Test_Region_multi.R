@@ -19,9 +19,9 @@
 #' If a variant in the given variant-set has minor allele frequency = 0 or
 #' greater than \code{rare_maf_cutoff}, the corresponding row will be \code{NA}. If a variant in
 #' the given variant-set has degenerate covariance matrix across multiple phenotypes, the p-value will be set as 1.
-#' @references Chen, H., et al. (2016). Control for population structure and relatedness for binary traits
-#' in genetic association studies via logistic mixed models. \emph{The American Journal of Human Genetics}, \emph{98}(4), 653-666.
-#' (\href{https://doi.org/10.1016/j.ajhg.2016.02.012}{pub})
+#' @references Li, X., Chen, H., et al. (2023). A statistical framework for powerful
+#' multi-trait rare variant analysis in large-scale whole-genome sequencing studies.
+#' \emph{bioRxiv}. (\href{https://doi.org/10.1101/2023.10.30.564764}{preprint})
 #' @export
 
 Indiv_Score_Test_Region_multi <- function(genotype,obj_nullmodel,

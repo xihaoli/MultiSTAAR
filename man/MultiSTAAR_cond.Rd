@@ -112,6 +112,10 @@ together with conditional p-values of each test weighted by each annotation
 using Cauchy method.
 }
 \references{
+Li, X., Chen, H., et al. (2023). A statistical framework for powerful
+multi-trait rare variant analysis in large-scale whole-genome sequencing studies.
+\emph{bioRxiv}. (\href{https://doi.org/10.1101/2023.10.30.564764}{preprint})
+
 Li, X., Li, Z., et al. (2020). Dynamic incorporation of multiple
 in silico functional annotations empowers rare variant association analysis of
 large whole-genome sequencing studies at scale. \emph{Nature Genetics}, \emph{52}(9), 969-983.
